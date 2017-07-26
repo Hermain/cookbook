@@ -1,0 +1,26 @@
+Add environment variables with S3 credentials to kafka in the iotivity.yml file:
+  kafka-zookeeper
+  environment:
+    - "AWS_ACCESS_KEY_ID=minioTest"
+    - "AWS_SECRET_ACCESS_KEY=minioTest"
+
+Create a bucket in your S3 (here connect-test)
+
+Create a S3 connector in the Kafka ui (confluent S3 connector) or via API with a config similar to this one with the topic you want to backup to S3 (here position-reports):
+    S3 connector config
+    {
+      "connector.class": "io.confluent.connect.s3.S3SinkConnector",
+      "s3.region": "us-east-1",
+      "flush.size": "3",
+      "topics": "position-reports",
+      "tasks.max": "1",
+      "store.url": "http://minio1:9000",
+      "format.class": "io.confluent.connect.s3.format.avro.AvroFormat",
+      "partitioner.class": "io.confluent.connect.storage.partitioner.DefaultPartitioner",
+      "schema.generator.class": "io.confluent.connect.storage.hive.schema.DefaultSchemaGenerator",
+      "name": "ConfluentConnector",
+      "storage.class": "io.confluent.connect.s3.storage.S3Storage",
+      "s3.bucket.name": "connect-test"
+    }
+    
+    Now the data should be backed up.
